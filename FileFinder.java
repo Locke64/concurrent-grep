@@ -1,4 +1,10 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // A FileFinder looks for the given pattern in the given file.
@@ -15,7 +21,34 @@ public class FileFinder extends Finder {
 
 	// execute the match
 	public Found call() {
-		//TODO stub
-		return null;
+		ArrayList<String> matches = new ArrayList<String>();
+		BufferedReader reader = null;
+		try {
+			reader = new BufferedReader(new FileReader(file));
+			String input;
+			while ( (input = reader.readLine()) != null ) {
+				Matcher m = pattern.matcher(input);
+				if ( pattern.toString().startsWith("^") && pattern.toString().endsWith("$") ) {
+					if ( m.matches() )
+						matches.add(input);
+				} else {
+					if ( m.find() )
+						matches.add(input);
+				}
+			}
+		} catch (FileNotFoundException e) {
+		    e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+		    try {
+		        if (reader != null)
+		            reader.close();
+		    } catch (IOException e) {
+		    	e.printStackTrace();
+		    }
+		}
+		Found found = new Found(file.toString(), matches);
+		return found;
 	}
 }

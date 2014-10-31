@@ -1,0 +1,7 @@
+foo:and:bar
+test1
+this:includes:colons:
+:::
+5
+hello:
+:hello

@@ -1,6 +1,5 @@
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -71,15 +70,19 @@ public class Finder implements Callable<Found> {
 	
 	// report the results of a found match
 	private static void report( Found found ) {
-		//TODO stub (just print it)
 		String filename = found.getFileName();
 		if ( filename == "" )
 			System.out.println("Results for input not in file");
 		else
 			System.out.println(found.getFileName());
 		List<String> matches = found.getMatches();
-		for( int a = 0; a < matches.size(); a++ )
-			System.out.println(matches.get(a));
+		if ( matches.size() == 0 )
+			System.out.println("No matches found");
+		else {
+			for( int a = 0; a < matches.size(); a++ )
+				System.out.println(matches.get(a));
+			System.out.println("");
+		}
 	}
 	
 	// create a new string finder to look for the given Pattern in the given input
@@ -96,21 +99,14 @@ public class Finder implements Callable<Found> {
 	
 	// execute the match
 	public Found call() {
-		//TODO stub
 		ArrayList<String> matches = new ArrayList<String>();
 		Matcher m = pattern.matcher(input);
 		if ( pattern.toString().startsWith("^") && pattern.toString().endsWith("$") ) {
-			
 			if ( m.matches() )
 				matches.add(input);
 		} else {
-			if ( m.matches() )
+			if ( m.find() )
 				matches.add(input);
-			else {
-				String[] results = pattern.split(input);
-				if ( results.length == 0 || results.length > 1 )
-					matches.add(input);
-			}
 		}
 		Found found = new Found("", matches);
 		return found;
