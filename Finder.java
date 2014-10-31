@@ -1,6 +1,8 @@
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutionException;
@@ -8,6 +10,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 // A Finder looks for the given pattern in the given string.
@@ -57,6 +60,7 @@ public class Finder implements Callable<Found> {
 		CompletionService<Found> ecs = new ExecutorCompletionService<Found>( executor );
 		for( Finder f : finders )
 			ecs.submit( f );
+		((ExecutorService) executor).shutdown();
 		int n = finders.size();
 		for( int i = 0; i < n; ++i ) {
 			Found fd = ecs.take().get();
@@ -68,6 +72,14 @@ public class Finder implements Callable<Found> {
 	// report the results of a found match
 	private static void report( Found found ) {
 		//TODO stub (just print it)
+		String filename = found.getFileName();
+		if ( filename == "" )
+			System.out.println("Results for input not in file");
+		else
+			System.out.println(found.getFileName());
+		List<String> matches = found.getMatches();
+		for( int a = 0; a < matches.size(); a++ )
+			System.out.println(matches.get(a));
 	}
 	
 	// create a new string finder to look for the given Pattern in the given input
@@ -85,6 +97,22 @@ public class Finder implements Callable<Found> {
 	// execute the match
 	public Found call() {
 		//TODO stub
-		return null;
+		ArrayList<String> matches = new ArrayList<String>();
+		Matcher m = pattern.matcher(input);
+		if ( pattern.toString().startsWith("^") && pattern.toString().endsWith("$") ) {
+			
+			if ( m.matches() )
+				matches.add(input);
+		} else {
+			if ( m.matches() )
+				matches.add(input);
+			else {
+				String[] results = pattern.split(input);
+				if ( results.length == 0 || results.length > 1 )
+					matches.add(input);
+			}
+		}
+		Found found = new Found("", matches);
+		return found;
 	}
 }
