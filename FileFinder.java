@@ -23,6 +23,7 @@ public class FileFinder extends Finder {
 	public Found call() {
 		ArrayList<String> matches = new ArrayList<String>();
 		BufferedReader reader = null;
+		int line = 0;
 		try {
 			reader = new BufferedReader(new FileReader(file));
 			String input;
@@ -30,11 +31,12 @@ public class FileFinder extends Finder {
 				Matcher m = pattern.matcher(input);
 				if ( pattern.toString().startsWith("^") && pattern.toString().endsWith("$") ) {
 					if ( m.matches() )
-						matches.add(input);
+						matches.add(line + " " + input);
 				} else {
 					if ( m.find() )
-						matches.add(input);
+						matches.add(line + " " + input);
 				}
+				++line;
 			}
 		} catch (FileNotFoundException e) {
 		    e.printStackTrace();
